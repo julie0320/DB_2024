@@ -1,0 +1,225 @@
+{% extends "backstage.html" %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+{% block title %}後台資料分析{% endblock title%}
+{% block content %}
+
+<div class="my-3 p-3 bg-body rounded shadow-sm">
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">銷售總額分析</button>
+        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Pizza銷量排行</button>
+        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">消費總額排名</button>        
+      </div>      
+    </nav>
+  </div>
+  <br/>
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+      <center> 
+        <div id="maina" class="container-fluid" style="width:1200px;height:500px"></div>
+      </center>
+    </div>
+    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+      <center>
+        <div id="mainb" class="container-fluid" style="width: 600px;height:500px"></div>
+      </center>
+    </div>
+    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+      <center>
+        <div id="mainc" class="container-fluid" style="width: 1200px;height:500px"></div>
+      </center>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 以長條圖與折線圖分析各月訂單
+  var chartDoma = document.getElementById('maina');
+  var myCharta = echarts.init(chartDoma);
+  var data = {{revenue|tojson}};
+  var count = {{dataa|tojson}};
+  var optiona = {
+    title: {
+      text: '各月銷售總額分析'
+    },
+    tooltip: {},
+    legend: {
+      data: ['銷售總額']
+    },
+    xAxis: {
+      data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+    },
+    yAxis: {},
+    series: [{
+      name: '銷售總額',
+      type: 'bar',
+      // symbol: 'circle',
+      symbolSize: 16,
+      data: data,
+      markPoint: {
+        data: [
+          {type: 'max', name: '銷量最高月份'},
+          {type: 'min', name: '銷量最低月份'}
+        ]
+      },
+      label: {
+        show: true,
+        position: 'top',
+        textStyle: {
+          fontSize: 15
+        }
+      }
+    }
+    ],
+    legend: {
+      show: true
+    },
+  };
+  // 異動: 不需要類別圓餅圖
+  // 以圓餅圖分析書本銷量
+  var chartDomb = document.getElementById('mainb');
+  var myChartb = echarts.init(chartDomb);
+  
+  var data = {{datab | tojson}};  // 從後端獲取前3名銷售額最多的商品資料
+  var nameList = data.map(item => item.name);  // 商品名稱列表
+  var salesList = data.map(item => item.value);  // 商品銷售額列表
+
+  var optionb = {
+    title: {
+      text: 'Top5 商品銷量分析',
+      left: 'left',
+      top: 'top'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    xAxis: {
+      type: 'value',
+      name: '銷售額',
+      axisLabel: {
+        formatter: '{value}'
+      }
+    },
+    yAxis: {
+    type: 'category',
+    data: nameList,  // 顯示商品名稱
+    axisLabel: {
+      interval: 0  // 確保所有商品名稱都顯示
+    },
+    inverse: true  // 設置逆序，使最大銷售額顯示在最上面
+    },
+    series: [
+      {
+        name: '銷售額',
+        type: 'bar',
+        data: salesList,  // 銷售額數據
+        label: {
+          show: true,
+          position: 'right',
+          valueAnimation: true
+        },
+        itemStyle: {
+          color: '#E0D68A'  // 可根據需要修改顏色
+        }
+      }
+    ],
+    legend: {
+      show: false  // 隱藏圖例
+    },
+    animationDuration: 3000,
+    animationDurationUpdate: 3000,
+    animationEasing: 'linear',
+    animationEasingUpdate: 'linear'
+  };
+
+  myChartb.setOption(optionb);
+
+  // 使用動態長條圖查看消費總額最多的使用者
+  var chartDomc = document.getElementById('mainc');
+  var myChartc = echarts.init(chartDomc);
+  var data = {{datac|tojson}};
+  var nameList = {{nameList|tojson}};
+  // var counter = {{counter|tojson}};
+  var countList = {{countList|tojson}};
+  var optionc = {
+    title: {
+      text: '使用者消費排名'
+    },
+    xAxis: {
+      max: 'dataMax'
+    },
+    yAxis: {
+      type: 'category',
+      data: nameList,
+      inverse: true,
+      animationDuration: 300,
+      animationDurationUpdate: 300,
+      max: 3
+    },
+    tooltip: {},
+    series: [
+      {
+        // realtimeSort: true,
+        name: '消費總額',
+        type: 'bar',
+        data: data,
+        label: {
+          show: true,
+          position: 'right',
+          valueAnimation: true
+        }
+      },
+      {
+        // realtimeSort: true,
+        name: '訂單總數',
+        type: 'bar',
+        data: countList,
+        label: {
+          show: true,
+          position: 'right',
+          valueAnimation: true
+        }
+      }
+      ],
+    legend: {
+      show: true
+    },
+    animationDuration: 3000,
+    animationDurationUpdate: 3000,
+    animationEasing: 'linear',
+    animationEasingUpdate: 'linear'
+  };
+
+  function run() {
+    myChartc.setOption({
+      series: [
+        {
+          type: 'bar',
+          data
+        }
+      ]
+    });
+  }
+
+  setTimeout(function() {
+    run();
+  }, 0);
+        
+  setInterval(function() {
+    update();
+  }, 3000);
+
+  optiona && myCharta.setOption(optiona);
+  optionb && myChartb.setOption(optionb);
+  optionc && myChartc.setOption(optionc);
+      
+</script>
+
+{% endblock content %}

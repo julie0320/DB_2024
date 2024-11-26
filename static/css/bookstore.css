@@ -1,0 +1,21 @@
+.pic_cart{
+    display: block; 
+    margin: 0 auto; 
+    max-width: 150pt;
+}
+
+.pic_show{
+    display: block; 
+    margin: 0 auto;
+    max-width: 250pt;
+}
+
+.card_center{
+    text-align: center; 
+    margin-top: auto;
+}
+
+td{
+    text-align: center; 
+    vertical-align: middle;
+}

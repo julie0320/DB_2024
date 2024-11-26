@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<script>
+    // 用於根據身份切換欄位顯示的 JavaScript
+    function toggleFields() {
+        const identity = document.querySelector('select[name="identity"]').value;
+        const addressField = document.getElementById('address-field');
+        const vehicleField = document.getElementById('vehicle-field');
+        const addressInput = document.querySelector('input[name="address"]');
+        const vehicleInput = document.querySelector('select[name="vehicle"]');
+
+        if (identity === 'pizzaboy') {
+            addressField.style.display = 'none';
+            vehicleField.style.display = 'block';
+            addressInput.removeAttribute('required'); // 移除地址的必填屬性
+            vehicleInput.setAttribute('required', 'required'); // 設置交通工具為必填
+        } else {
+            addressField.style.display = 'block';
+            vehicleField.style.display = 'none';
+            addressInput.setAttribute('required', 'required'); // 設置地址為必填
+            vehicleInput.removeAttribute('required'); // 移除交通工具的必填屬性
+        }
+    }
+
+    // 確保頁面加載後正確顯示欄位
+    document.addEventListener('DOMContentLoaded', () => {
+        toggleFields();
+    });
+</script>
+
+{% endblock head %}
+
+{% block title %}Register Page{% endblock title%}
+
+{% block content%}
+<div class="position-absolute top-50 start-50 translate-middle outer_div">
+    <a href="{{ url_for('index') }}"><img class="icon" src="{{ url_for('static', filename='./img/logo.png') }}"></a>
+    <h1 class="register_title mb-3 mt-3">會員註冊</h1>
+
+    <div class="form_div">
+        <form method="post" action={{ url_for('api.register') }}>
+            <p class="mb-3">
+                姓名：<input type="text" name="username" required />
+            </p>
+
+            <p class="mb-3">
+                帳號：<input type="text" name="account" required />
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <p class="same_accoount">
+                    新增失敗
+                </p>
+                {% endif %}
+                {% endwith %}
+            </p>
+
+            <p class="mb-4">
+                密碼：<input type="password" name="password" required />
+            </p>
+
+            <p class="mb-4">
+                手機：<input type="phone" name="phone" required />
+            </p>
+
+            <p class="mb-4" id="address-field">
+                地址：<input type="text" name="address" required />
+            </p>
+
+            <p class="mb-4" id="vehicle-field" style="display: none;">
+                交通工具：<select name="vehicle">
+                    <option value="motor" selected>機車</option>
+                    <option value="car">汽車</option>
+                </select>
+            </p>
+
+            <div class="btn_div mb-4" style="margin-bottom: 1rem;">
+                <p class="option_div">選擇你要註冊的身份：</p>
+                <select name="identity" onchange="toggleFields()">
+                    <option value="user" selected>客戶</option>
+                    <option value="pizzaboy">店員</option>
+                </select>
+            </div>
+
+            <p>
+                <a href="{{ url_for('index') }}">
+                    <button type="button" class="register_btn">回上頁</button>
+                </a>
+                <button type="submit" class="register_btn">註冊</button>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock content%}

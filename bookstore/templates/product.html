@@ -1,0 +1,50 @@
+{% extends "frontstage.html" %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+
+{% block title %}BookStore{% endblock title%}
+
+{% block content %}
+
+
+
+<br/>
+<div class="row">
+<div class="card" style="width: 20rem; margin-left:20%; margin-top: 5%;">
+  <!-- <img src={{ url_for('static', filename = temp  ) }} class="card-img-top"> -->
+  <img src="{{ url_for('static', filename='img/' + data.商品名稱 + '.png') }}" class="card-img-top">
+  <div class="card-body">
+    <h5 class="card-title"><b>{{ data.商品名稱 }}</b></h5>
+    <p class="card-text"></p>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">$&nbsp;{{ data.單價 }}</li>
+  </ul>
+  <div class="card-body">
+    <form method="post" action={{ url_for('bookstore.cart') }}>
+      <a href="{{ url_for('bookstore.bookstore') }}" class="btn btn-outline-primary">回商品列表</a>
+      <button class="btn btn-outline-success" type="submit" value="{{data.商品編號}}" name="pid">加入購物車</a>
+    </form> 
+  </div>
+</div>
+
+
+<div class="col-sm-6">
+  
+<div class="card" style="margin-top:10%">
+  <h5 class="card-header">商品介紹</h5>
+  <div class="card-body">
+    <p class="card-text">
+      {{data.商品敘述}}
+    </p>
+    
+  </div>
+</div>
+</div>
+
+
+</div>
+
+
+{% endblock content%}
